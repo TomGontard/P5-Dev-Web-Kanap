@@ -25,7 +25,7 @@ async function insertProductsIntoDOM() {
     const productDescription = document.createElement('p');
 
     // Attribuer les classes et les attributs nécessaires aux éléments
-    link.href = `./product.html?id=${product.id}`; // Lien vers la page produit avec l'ID du produit
+    link.href = `./product.html?id=${product._id}`; // Lien vers la page produit avec l'ID du produit
     image.src = product.imageUrl;
     image.alt = product.altTxt;
     productName.textContent = product.name;
