@@ -54,5 +54,48 @@ async function displayProductDetails() {
     });
 }
 
+async function basketUpdate() {
+    const addToCartButton = document.getElementById('addToCart');
+    const productId = await getProductIdFromURL();
+
+    addToCartButton.addEventListener('click', () => {
+        // Récupération des informations du produit à ajouter au panier
+        const selectedColor = document.getElementById('colors').value;
+        const selectedQuantity = parseInt(document.getElementById('quantity').value);
+        let productDetails = {
+            id: productId,
+            color: selectedColor,
+            quantity: selectedQuantity
+        };
+
+        // Récupération ou création du panier via le localStorage
+        let cart = localStorage.getItem('cart');
+        if (!cart) {
+            cart = [];
+        } else {
+            cart = JSON.parse(cart);
+        }
+
+        console.log(cart);
+
+        // Vérifier si le produit est déjà dans le panier
+        const existingProductIndex = cart.findIndex(
+            (item) => item.id === productDetails.id &&
+                      item.color === productDetails.color
+        );
+
+        if (existingProductIndex !== -1) {
+            // Si le produit est déjà dans le panier, incrémenter la quantité
+            cart[existingProductIndex].quantity += productDetails.quantity;
+        } else {
+            // Sinon, ajouter le produit au panier
+            cart.push(productDetails);
+        }
+
+        localStorage.setItem('cart', JSON.stringify(cart));
+    });
+}
+
 //Lancement de la fonction une fois que la page est chargée
 document.addEventListener('DOMContentLoaded', displayProductDetails);
+document.addEventListener('DOMContentLoaded', basketUpdate);
