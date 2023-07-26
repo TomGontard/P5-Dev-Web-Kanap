@@ -166,6 +166,56 @@ async function displayArticles() {
 
 }
 
+async function savePurchase(event) {
+    // On empêche la page de se recharger
+    event.preventDefault();
+    
+    // Récupération de toutes les informations des produits
+    const response = await fetch(`http://localhost:3000/api/products`);
+    const products = await response.json();
+    const cart = JSON.parse(localStorage.getItem('cart'));
+    const cartSection = document.querySelector('#cart__items');
+    
+    const firstNameInput = document.getElementById('firstName').value;
+    const lastNameInput = document.getElementById('lastName').value;
+    const addressInput = document.getElementById('address').value;
+    const cityInput = document.getElementById('city').value;
+    const emailInput = document.getElementById('email').value;
+    
+    // Vérification de l'adresse email
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(emailInput)) {
+        displayErrorMessage('emailErrorMsg', 'Veuillez saisir une adresse e-mail valide.');
+        return;
+    }
 
-//Lancement de la fonction une fois que la page est chargée
+    // Création d'un objet contenant les données de l'achat 
+    const orderData = {
+        contact: {
+            firstName: firstNameInput,
+            lastName: lastNameInput,
+            address: addressInput,
+            city: cityInput,
+            email: emailInput,
+        },
+        basket: [],
+    };
+
+    // Ajout des détails des produits (quantité.s et couleur.s)
+    orderData.basket = cart.map((item) => {
+        return {
+            id: item.id,
+            color: item.color,
+            quantity: item.quantity,
+        };
+    });
+
+    console.log(orderData);
+}
+
+// Lancement de la fonction une fois que la page est chargée
 document.addEventListener('DOMContentLoaded', displayArticles);
+
+// Mise sous écoute du formulaire
+const form = document.querySelector('.cart__order__form');
+form.addEventListener('submit', savePurchase);
