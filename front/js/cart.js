@@ -171,8 +171,6 @@ async function savePurchase(event) {
     event.preventDefault();
     
     // Récupération de toutes les informations des produits
-    const response = await fetch(`http://localhost:3000/api/products`);
-    const products = await response.json();
     const cart = JSON.parse(localStorage.getItem('cart'));
     const cartSection = document.querySelector('#cart__items');
     
@@ -202,15 +200,20 @@ async function savePurchase(event) {
     };
 
     // Ajout des détails des produits (quantité.s et couleur.s)
-    orderData.basket = cart.map((item) => {
-        return {
-            id: item.id,
-            color: item.color,
-            quantity: item.quantity,
-        };
-    });
+    orderData.products = cart.map((item) => item.id);
 
-    console.log(orderData);
+    // Récupération de la réponse de l'API
+    const response = await fetch(`http://localhost:3000/api/products/order`, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json',},
+            body: JSON.stringify(orderData),
+        });
+
+    const responseData = await response.json();
+
+    // Redirection de l'utilisateur vers la page de confirmation 
+    // avec l'identifiant de commande dans l'URL
+    window.location.href = `confirmation.html?id=${responseData.orderId}`;
 }
 
 // Lancement de la fonction une fois que la page est chargée
